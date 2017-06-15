@@ -1,0 +1,8 @@
+service: default # The first service to a new application must be the 'default' service
+runtime: python27
+api_version: 1
+threadsafe: true
+
+handlers:
+- url: /.*
+  script: hello_world.app

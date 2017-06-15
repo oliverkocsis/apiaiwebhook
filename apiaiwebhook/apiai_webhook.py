@@ -13,43 +13,44 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import json
+import flask.json as json
 import flask
 
 
 class APIAIWebhook(flask.Flask):
     def fulfillment(self, rule):
         def decorator(f):
-            self.fulfillment_fucntions[rule] = f
+            self.fulfillment_functions[rule] = f
             return f
 
         return decorator
 
     def webhook(self):
-        api_key = flask.request.headers.get("api-key")
-        if api_key is None:
-            msg = "api-key http header is required"
-            print(msg)
-            flask.abort(400, msg)
+        if self.api_key_value is not None:
+            api_key_value = flask.request.headers.get(self.api_key_header)
+            if api_key_value is None:
+                msg = "api-key http header is required"
+                self.logger.error(msg)
+                flask.abort(400, msg)
 
-        if api_key != self.api_key:
-            msg = "api-key is invalid"
-            print(msg)
-            flask.abort(401, msg)
+            if api_key_value != self.api_key_value:
+                msg = "api-key is invalid"
+                self.logger.error(msg)
+                flask.abort(401, msg)
 
         req = flask.request.get_json(force=True)
-        print("Request: " + json.dumps(req))
+        self.logger.debug("request: %s" % json.dumps(req))
 
         result = req["result"]
         action = result.get("action", "")
         parameters = result.get("parameters", {})
 
-        print ("%s: %s" % (action, parameters))
+        self.logger.debug("%s: %s" % (action, parameters))
 
-        res = self.fulfillment_fucntions[action](**parameters)
+        res = self.fulfillment_functions[action](**parameters)
 
         res = json.dumps(res)
-        print("Response: " + res)
+        self.logger.debug("response: %s" % res)
 
         r = flask.make_response(res)
         r.headers['Content-Type'] = 'application/json'
@@ -57,26 +58,27 @@ class APIAIWebhook(flask.Flask):
 
     def test_client_apiai(self):
         flask_test_client = super(APIAIWebhook, self).test_client()
-        return APIAIWebhookTestClient(flask_test_client, self.api_key, self.webhook_url)
+        return APIAIWebhookTestClient(flask_test_client, self)
 
     def make_response_apiai(self,
                             speech=None,
-                            displayText=None,
+                            display_text=None,
                             data=None,
-                            contextOut=[],
-                            followupEvent=None):
+                            context_out=[],
+                            followup_event=None):
         return {
             "speech": speech,
-            "displayText": displayText,
+            "displayText": display_text,
             "data": data,
-            "contextOut": contextOut,
+            "contextOut": context_out,
             "source": self.name,
-            "followupEvent": followupEvent
+            "followupEvent": followup_event
         }
 
     def __init__(self,
                  import_name,
-                 api_key,
+                 api_key_header="api-key",
+                 api_key_value=None,
                  webhook_url="/webhook",
                  static_path=None,
                  static_url_path=None,
@@ -95,17 +97,19 @@ class APIAIWebhook(flask.Flask):
             instance_relative_config,
             root_path)
 
-        self.api_key = api_key
-        self.fulfillment_fucntions = {}
+        self.api_key_header = api_key_header
+        self.api_key_value = api_key_value
+        self.fulfillment_functions = {}
         self.webhook_url = webhook_url
         self.add_url_rule(webhook_url, "webhook", self.webhook, methods=['POST'])
+        if self.api_key_value is None:
+            self.logger.warning("api-key is empty! use 'api_key_value' parameter to define it.")
 
 
 class APIAIWebhookTestClient:
-    def __init__(self, flask_test_client, api_key, webhook_url):
+    def __init__(self, flask_test_client, apiai_webhook):
         self.flask_test_client = flask_test_client
-        self.api_key = api_key
-        self.webhook_url = webhook_url
+        self.apiai_webhook = apiai_webhook
 
     def webhook(self,
                 result_action=None,
@@ -117,7 +121,7 @@ class APIAIWebhookTestClient:
             }
         }
         return self.flask_test_client.post(
-            self.webhook_url,
+            self.apiai_webhook.webhook_url,
             data=json.dumps(req),
             content_type="application/json",
-            headers={"api-key": self.api_key})
+            headers={self.apiai_webhook.api_key_header: self.apiai_webhook.api_key_value})

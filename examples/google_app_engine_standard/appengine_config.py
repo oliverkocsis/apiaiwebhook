@@ -13,17 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from apiaiwebhook import APIAIWebhook
+from google.appengine.ext import vendor
 
-app = APIAIWebhook(__name__)
-
-
-@app.fulfillment("hello-world")
-def hello_world(name=None):
-    if name is None:
-        name = "World"
-    return app.make_response_apiai(speech="Hello %s!" % name)
-
-
-if __name__ == '__main__':
-    app.run(debug=True)
+# Add any libraries installed in the "lib" folder.
+vendor.add('lib')

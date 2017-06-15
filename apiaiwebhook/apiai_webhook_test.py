@@ -15,12 +15,14 @@
 
 from apiai_webhook import APIAIWebhook
 import unittest
+import flask.json as json
 
 
 class APIAIWebhookTest(unittest.TestCase):
     def setUp(self):
-        app = APIAIWebhook(__name__, "secret")
+        app = APIAIWebhook(__name__)
         app.testing = True
+        app.debug = True
         self.test_client = app.test_client_apiai()
 
         @app.fulfillment("none")
@@ -63,6 +65,35 @@ class APIAIWebhookTest(unittest.TestCase):
                                      })
         assert r.status_code == 200
         assert "Test with multiple parameters: first parameter, second parameter" in r.data
+
+
+class APIAIWebhookSecuredTest(unittest.TestCase):
+    def setUp(self):
+        app = APIAIWebhook(__name__, api_key_value="secret")
+        app.testing = True
+        app.debug = True
+        self.app = app
+        self.test_client = app.test_client()
+
+        @app.fulfillment("none")
+        def my_fullfillment_none():
+            return app.make_response_apiai(speech="Test with no parameter")
+
+    def test_invalid_api_key_header(self):
+        r = self.test_client.post(
+            self.app.webhook_url,
+            data=json.dumps({}),
+            content_type="application/json",
+            headers={self.app.api_key_header[::-1]: self.app.api_key_value})
+        assert r.status_code == 400
+
+    def test_invalid_api_key_value(self):
+        r = self.test_client.post(
+            self.app.webhook_url,
+            data=json.dumps({}),
+            content_type="application/json",
+            headers={self.app.api_key_header: self.app.api_key_value[::-1]})
+        assert r.status_code == 401
 
 
 if __name__ == '__main__':
