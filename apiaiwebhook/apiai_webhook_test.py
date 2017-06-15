@@ -13,9 +13,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from apiai_webhook import APIAIWebhook
 import unittest
+
 import flask.json as json
+
+from apiai_webhook import APIAIWebhook
 
 
 class APIAIWebhookTest(unittest.TestCase):
@@ -44,18 +46,18 @@ class APIAIWebhookTest(unittest.TestCase):
     def test_none(self):
         r = self.test_client.webhook(result_action="none")
         assert r.status_code == 200
-        assert "Test with no parameter" in r.data
+        assert "Test with no parameter" in r.data.decode("utf-8")
 
     def test_one(self):
         r = self.test_client.webhook(result_action="one",
                                      result_parameters={"one": "first parameter"})
         assert r.status_code == 200
-        assert "Test with one parameter: first parameter" in r.data
+        assert "Test with one parameter: first parameter" in r.data.decode("utf-8")
 
     def test_one_default_empty(self):
         r = self.test_client.webhook(result_action="one-default")
         assert r.status_code == 200
-        assert "Test with one parameter (default None): None" in r.data
+        assert "Test with one parameter (default None): None" in r.data.decode("utf-8")
 
     def test_multiple(self):
         r = self.test_client.webhook(result_action="multiple",
@@ -64,7 +66,7 @@ class APIAIWebhookTest(unittest.TestCase):
                                          "two": "second parameter",
                                      })
         assert r.status_code == 200
-        assert "Test with multiple parameters: first parameter, second parameter" in r.data
+        assert "Test with multiple parameters: first parameter, second parameter" in r.data.decode("utf-8")
 
 
 class APIAIWebhookSecuredTest(unittest.TestCase):

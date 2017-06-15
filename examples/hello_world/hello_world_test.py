@@ -27,13 +27,13 @@ class HelloWorldTest(unittest.TestCase):
     def test_hello_world_default(self):
         r = self.test_client.webhook(result_action="hello-world")
         assert r.status_code == 200
-        assert "Hello World!" in r.data
+        assert "Hello World!" in r.data.decode("utf-8")
 
     def test_hello_world_apiai(self):
         r = self.test_client.webhook(result_action="hello-world",
                                      result_parameters={"name": "api.ai webhook"})
         assert r.status_code == 200
-        assert "Hello api.ai webhook!" in r.data
+        assert "Hello api.ai webhook!" in r.data.decode("utf-8")
 
 
 if __name__ == '__main__':
