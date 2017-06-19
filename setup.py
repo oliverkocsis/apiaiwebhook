@@ -30,7 +30,7 @@ setup(
 
         'Topic :: Communications :: Chat',
         'Topic :: Internet :: WWW/HTTP',
-        'Topic :: Software Development :: Libraries :: Application Frameworks'
+        'Topic :: Software Development :: Libraries :: Application Frameworks',
 
         'Operating System :: OS Independent',
         'Environment :: Web Environment',
