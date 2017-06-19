@@ -11,7 +11,7 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
 setup(
     name='apiaiwebhook',
 
-    version='0.1.0.dev1',
+    version='0.1.0.dev2',
 
     description='API.AI Webhook is a fulfillment microframework for API.AI based on Flask for getting started quickly with API.AI webhooks.',
     long_description=long_description,
@@ -37,10 +37,12 @@ setup(
         'Framework :: Flask',
 
         'Programming Language :: Python :: 2',
+        'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.6'
+        'Programming Language :: Python :: 3.3',
+        'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5'
     ],
 
     keywords='api.ai fullfillment webhook rest restful webservice dispatcher framework flask',

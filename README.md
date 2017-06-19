@@ -50,9 +50,13 @@ Then configure the authentication header in your API.AI agent.
 ### Flask
 The `APIAIWebhook` class is derived from `Flask`. Visit the official [website](http://flask.pocoo.org/) to extend the functionality of API.AI Webhook 
 
-### Development
+## Development
 
-Before running or deploying this application, install the dependencies using
+Before running or deploying this application, install the framework using
 [pip](http://pip.readthedocs.io/en/stable/):
 
-    pip install -r requirements.txt    
+    pip install -e .
+    
+To test the framework, execute the unit tests via:
+
+    python unit_tests.py

@@ -17,7 +17,7 @@ import unittest
 
 import flask.json as json
 
-from apiai_webhook import APIAIWebhook
+from apiaiwebhook import APIAIWebhook
 
 
 class APIAIWebhookTest(unittest.TestCase):
