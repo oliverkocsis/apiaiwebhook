@@ -28,40 +28,66 @@ class APIAIWebhookTest(unittest.TestCase):
         self.test_client = app.test_client_apiai()
 
         @app.fulfillment("none")
-        def my_fullfillment_none():
+        def my_fulfillment_none():
             return app.make_response_apiai(speech="Test with no parameter")
 
         @app.fulfillment("one")
-        def my_fullfillment_one(one):
+        def my_fulfillment_one(one):
             return app.make_response_apiai(speech="Test with one parameter: %s" % one)
 
         @app.fulfillment("one-default")
-        def my_fullfillment_one(one=None):
+        def my_fulfillment_one(one=None):
             return app.make_response_apiai(speech="Test with one parameter (default None): %s" % one)
 
+        @app.fulfillment("one-kwargs")
+        def my_fulfillment_one(one, **kwargs):
+            return app.make_response_apiai(speech="Test with one parameter (kwargs): %s (%s)" % (one, kwargs))
+
         @app.fulfillment("multiple")
-        def my_fullfillment_two(one, two):
+        def my_fulfillment_two(one, two):
             return app.make_response_apiai(speech="Test with multiple parameters: %s, %s" % (one, two))
 
+    def test_unknown(self):
+        r = self.test_client.webhook(action="unknown")
+        assert r.status_code == 404
+
     def test_none(self):
-        r = self.test_client.webhook(result_action="none")
+        r = self.test_client.webhook(action="none")
         assert r.status_code == 200
         assert "Test with no parameter" in r.data.decode("utf-8")
 
     def test_one(self):
-        r = self.test_client.webhook(result_action="one",
-                                     result_parameters={"one": "first parameter"})
+        r = self.test_client.webhook(action="one",
+                                     parameters={"one": "first parameter"})
         assert r.status_code == 200
         assert "Test with one parameter: first parameter" in r.data.decode("utf-8")
 
     def test_one_default_empty(self):
-        r = self.test_client.webhook(result_action="one-default")
+        r = self.test_client.webhook(action="one-default")
         assert r.status_code == 200
         assert "Test with one parameter (default None): None" in r.data.decode("utf-8")
 
+    def test_one_kwargs_one(self):
+        r = self.test_client.webhook(action="one-kwargs",
+                                     parameters={"one": "first parameter"})
+        assert r.status_code == 200
+        print(r.data.decode("utf-8"))
+        assert "Test with one parameter (kwargs): first parameter ({})" in r.data.decode("utf-8")
+
+    def test_one_kwargs_multiple(self):
+        r = self.test_client.webhook(action="one-kwargs",
+                                     parameters={
+                                         "one": "first parameter",
+                                         "two": "second parameter",
+                                     })
+        assert r.status_code == 200
+        print(r.data.decode("utf-8"))
+        assert "Test with one parameter (kwargs): first parameter ({u'two': u'second parameter'})" in r.data.decode(
+            "utf-8")
+
     def test_multiple(self):
-        r = self.test_client.webhook(result_action="multiple",
-                                     result_parameters={
+        r = self.test_client.webhook(action="multiple",
+                                     parameters={
                                          "one": "first parameter",
                                          "two": "second parameter",
                                      })

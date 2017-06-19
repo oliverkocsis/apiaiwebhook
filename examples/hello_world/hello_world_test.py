@@ -25,13 +25,13 @@ class HelloWorldTest(unittest.TestCase):
         self.test_client = hello_world.app.test_client_apiai()
 
     def test_hello_world_default(self):
-        r = self.test_client.webhook(result_action="hello-world")
+        r = self.test_client.webhook(action="hello-world")
         assert r.status_code == 200
         assert "Hello World!" in r.data.decode("utf-8")
 
     def test_hello_world_apiai(self):
-        r = self.test_client.webhook(result_action="hello-world",
-                                     result_parameters={"name": "api.ai webhook"})
+        r = self.test_client.webhook(action="hello-world",
+                                     parameters={"name": "api.ai webhook"})
         assert r.status_code == 200
         assert "Hello api.ai webhook!" in r.data.decode("utf-8")
 
