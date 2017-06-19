@@ -26,7 +26,7 @@ To run the application, just execute the python file:
 
     python hello_world.py
 
-To test test the application, you can use either the in-built api.ai test client
+To test the application, you can use either the in-built api.ai test client
 
     app.testing = True
     res = app.test_client_apiai().webhook(action="hello-world"})
@@ -65,9 +65,9 @@ The webhook dispatcher responses:
 
 * HTTP 400 when `api_key_value` is defined but it the authentication header is not provided.
 * HTTP 401 when `api_key_value` is defined but it is invalid.
-* HTTP 404 when fulfillment function is defined for the provided action.
+* HTTP 404 when fulfillment function is not defined for the provided action.
 
-Otherwise it returns a valida application/json content-type HTTP response.
+Otherwise it returns a valid application/json content-type HTTP response.
 The response can be create using the helper function of `make_response_apiai()`
 
 Example:
@@ -100,7 +100,7 @@ Then configure the authentication header in your API.AI agent.
 
 ### Testing
 
-The Uses a regular Flask test client in order to post valid webhook messages.
+The API.AI Webhook Client extends the Flask Client in order to post valid webhook messages.
 
     app.testing = True
     app.debug = True
