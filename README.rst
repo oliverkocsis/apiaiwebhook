@@ -1,4 +1,4 @@
-# API.AI Webhook
+# API.AI Webhook ![Travis CI build status image for master branch](https://travis-ci.org/paoro-solutions/apiaiwebhook.svg?branch=master)
 
 API.AI Webhook is a fulfillment microframework for [API.AI](https://api.ai/) based on [Flask](http://flask.pocoo.org/) for getting started quickly with API.AI [webhooks](https://docs.api.ai/docs/webhook). 
 
