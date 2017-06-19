@@ -5,7 +5,6 @@ API.AI Webhook is a fulfillment microframework for [API.AI](https://api.ai/) bas
 ## Users' Guide 
 
 ### Quick Start
-The application is tested using `python 2.7`.
 
 Install the package with 
     
